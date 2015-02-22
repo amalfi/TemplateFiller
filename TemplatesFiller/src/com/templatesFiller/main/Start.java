@@ -11,38 +11,47 @@ public class Start {
 
 	public static void main(String[] args) 
 	{
-		String test = "@test@ so @test2@ odod";
-		HashMap<String,String> mapOfTaggedValuesLists = new HashMap<String,String>();
-		ArrayList<String> listOfTaggedValuesInCurrentLine = getTaggedValuesFromCurrentLine(test, "@");
-		//Map<String,String> keysWithValues = new HashMap<String,String>();
-		//String filledTemplteFile = fillMarkedValuesWithProperStrings("","",keysWithValues);
+		String test = "@test@ so @test2@ odod@test3@";
+		Map<String,String> mapWithTaggedKeysAndValues = new HashMap<String,String>();
+			mapWithTaggedKeysAndValues.put("test","ZAWARTOSC1");
+			mapWithTaggedKeysAndValues.put("test2","ZAWARTOSC2");
+			mapWithTaggedKeysAndValues.put("test3","ZAWARTOSC3");
+			
+		//------------------------------------------------------------------------
+		String filledHtmlTemplate=fillMarkedValuesWithProperStrings(test, "@",mapWithTaggedKeysAndValues);
+		//-----------------------------------------------------------------------
 	}
 	
-	private static String fillMarkedValuesWithProperStrings(String templateContent, String markupSign, Map<String,String>keysWithValues)
+	private static String fillMarkedValuesWithProperStrings(String templateContent, String markupSign, Map<String,String> mapWithTaggedKeysAndValues)
 	{
-		Map<String,String> markedKeysMap = new HashMap<String,String>();
+		ArrayList<String> markedKeysList = new ArrayList<String>();
 		String templateFileContent= loadFileFromDisk("pathToFile");
-		BufferedReader bufReader = new BufferedReader(new StringReader(templateFileContent));
+		
+		BufferedReader bufReader = new BufferedReader(new StringReader(templateContent));
 		
 		String line=null;
 		try 
 		{
 			while( (line=bufReader.readLine()) != null )
 			{
-				
+				markedKeysList.addAll((getTaggedValuesFromCurrentLine(line,markupSign)));
 			}
 		} 
 		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
-		
-		//Iterate trough every line of String getting marked values with Markup sign
-		//Add markedValues to map 'markedyKeysMap'
-		//Loop - iterate trough marked keys map, if markedKeysMap contains key same as keys map - replace in 'templateContent'
-		//markedValue with walue from key	sWithValues map
-
-		return "";
+		System.out.println("test");
+		for (int i=0; i<markedKeysList.size(); i++)
+		{
+			String currentKey = markedKeysList.get(i);
+			if(mapWithTaggedKeysAndValues.containsKey(currentKey))
+			{
+				templateContent=templateContent.replace(markupSign+currentKey+markupSign, mapWithTaggedKeysAndValues.get(currentKey));
+			}
+			
+		}
+		return templateContent;
 	}
 	
 	private static ArrayList<String> getTaggedValuesFromCurrentLine(String lineToAnalyze, String tag)
